@@ -9,6 +9,21 @@ const api = axios.create({
   },
 })
 
+const API_BASE = "http://127.0.0.1:5000"
+
+// Ask question API
+export const askQuestion = async (question) => {
+  try {
+    const response = await axios.post(`${API_BASE}/ask`, {
+      question: question
+    })
+    return response.data
+  } catch (error) {
+    console.error("Error asking question:", error)
+    return { error: "Failed to ask question" }
+  }
+}
+
 // API Functions
 export const getQuestions = async () => {
   try {

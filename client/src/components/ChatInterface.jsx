@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Send, Download, RotateCcw, CheckCircle, XCircle, Clock } from 'lucide-react'
-import { getRandomQuestion, generateQuestion, evaluateAnswer } from '../services/api'
+import {askQuestion, getRandomQuestion, generateQuestion, evaluateAnswer } from '../services/api'
 import './ChatInterface.css'
+import 'axios'
 
 const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndInterview }) => {
   const [currentQuestion, setCurrentQuestion] = useState(null)
@@ -14,7 +15,7 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
-
+  
   useEffect(() => {
     scrollToBottom()
   }, [messages])
@@ -59,62 +60,47 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
   }
 
   const handleSubmitAnswer = async () => {
-    if (!userAnswer.trim() || !currentQuestion) return
+  if (!userAnswer.trim()) return
 
-    const answerMessage = {
-      id: messages.length + 1,
-      type: 'user-answer',
-      content: userAnswer,
+  // Push user answer to messages
+  const answerMessage = {
+    id: messages.length + 1,
+    type: 'user-answer',
+    content: userAnswer,
+    timestamp: new Date()
+  }
+
+  setMessages(prev => [...prev, answerMessage])
+  setIsLoading(true)
+
+  try {
+    // Call Flask backend with user input
+    const response = await askQuestion(userAnswer)
+    console.log(response)
+    const aiMessage = {
+      id: messages.length + 2,
+      type: 'question',
+      content: response.response || response.error || "No response received",
       timestamp: new Date()
     }
 
-    setMessages(prev => [...prev, answerMessage])
-    setInterviewData(prev => ({
-      ...prev,
-      answers: [...(prev.answers || []), {
-        question: currentQuestion,
-        answer: userAnswer,
-        timestamp: new Date()
-      }]
-    }))
+    setMessages(prev => [...prev, aiMessage])
+    setCurrentQuestion({ question: response.response }) // for continuity
 
-    setIsLoading(true)
-    setUserAnswer('')
-
-    try {
-      // Evaluate the answer
-      const evaluation = await evaluateAnswer(currentQuestion.question, userAnswer)
-      
-      const evaluationMessage = {
-        id: messages.length + 2,
-        type: 'evaluation',
-        content: evaluation.evaluation || evaluation.message,
-        metadata: {
-          status: evaluation.status,
-          report: evaluation.report
-        },
-        timestamp: new Date()
-      }
-
-      setMessages(prev => [...prev, evaluationMessage])
-
-      // Load next question after a delay
-      setTimeout(() => {
-        loadNextQuestion()
-      }, 2000)
-
-    } catch (error) {
-      console.error('Error evaluating answer:', error)
-      const errorMessage = {
-        id: messages.length + 2,
-        type: 'error',
-        content: 'Failed to evaluate answer. Please try again.',
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, errorMessage])
+  } catch (error) {
+    console.error("Error communicating with backend:", error)
+    const errorMessage = {
+      id: messages.length + 2,
+      type: 'error',
+      content: 'Failed to connect to AI. Please try again.',
+      timestamp: new Date()
     }
-    setIsLoading(false)
+    setMessages(prev => [...prev, errorMessage])
   }
+
+  setUserAnswer('')
+  setIsLoading(false)
+}
 
   const loadNextQuestion = async () => {
     setIsLoading(true)
@@ -255,7 +241,7 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your Excel formula or explanation here..."
+              placeholder="Type 'ask the question' "
               className="answer-input"
               rows={3}
               disabled={isLoading}
