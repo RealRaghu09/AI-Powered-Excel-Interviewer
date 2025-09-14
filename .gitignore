@@ -1,0 +1,3 @@
+/backend/venv
+/client/node_modules
+backend/.env
