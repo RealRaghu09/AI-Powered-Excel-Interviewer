@@ -1,0 +1,22 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "level": "basic",
+      "topic": "Functions",
+      "question": "Using sales_data.csv, calculate total sales for Month = 'Jan'."
+    },
+    {
+      "id": "q2",
+      "level": "intermediate",
+      "topic": "Pivot",
+      "question": "Create a Pivot Table from sales_data.csv to show total Revenue by Region."
+    },
+    {
+      "id": "q3",
+      "level": "advanced",
+      "topic": "Lookup",
+      "question": "Write an INDEX-MATCH formula that finds Sales by Product for Month = 'Feb'."
+    }
+  ]
+}
