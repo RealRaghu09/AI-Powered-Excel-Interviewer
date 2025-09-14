@@ -156,7 +156,43 @@
 .download-card svg {
     color: #ff6b35;
 }
+/* ...existing code... */
 
+/* Input and select styling */
+.input {
+  padding: 12px 14px;
+  border: 1.5px solid #ff6b35;
+  border-radius: 8px;
+  background: #181818;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.04);
+}
+
+.input:focus {
+  border-color: #ff8c42;
+  box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.2);
+}
+
+.input::placeholder {
+  color: #aaa;
+  opacity: 1;
+}
+
+/* Remove default select arrow for consistency */
+select.input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,<svg width='16' height='16' fill='orange' xmlns='http://www.w3.org/2000/svg'><path d='M4 6l4 4 4-4'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+}
+
+/* ...existing code... */
 .download-card h3 {
     font-size: 1.1rem;
     font-weight: 600;

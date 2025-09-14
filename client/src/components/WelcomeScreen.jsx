@@ -63,7 +63,6 @@ const WelcomeScreen = ({ onStartInterview }) => {
           </div>
         </div>
 
-        {/* Interview Setup Form */}
         <div className="setup-section">
           <div className="setup-card">
             <h2>Start Your Interview</h2>
