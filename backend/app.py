@@ -12,7 +12,6 @@ CORS(app, resources={
     }
 })
 
-# Single global model instance (no sessions)
 llm = MyModel()
 
 @app.route('/home')
@@ -41,7 +40,8 @@ def ask_question():
         response = llm.response(user_input)
 
         return jsonify({
-            "response": response
+            "response": response,
+            "history": llm.history
         })
     except Exception as e:
         return jsonify({

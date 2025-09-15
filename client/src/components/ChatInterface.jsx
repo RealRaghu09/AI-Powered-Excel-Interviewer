@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Send, Download, RotateCcw, CheckCircle, XCircle, Clock } from 'lucide-react'
 import {askQuestion, getRandomQuestion, generateQuestion, evaluateAnswer } from '../services/api'
+import salesCsvUrl from '../sales_data.csv?url'
 import './ChatInterface.css'
 import 'axios'
 import Loading from './Loading'
@@ -283,13 +284,14 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
               Skip Question
             </button>
             
-            <button
-              onClick={() => window.open('/api/start', '_blank')}
+            <a
+              href={salesCsvUrl}
+              download
               className="btn btn-secondary"
             >
               <Download size={16} />
               Download Data
-            </button>
+            </a>
 
             <button
               onClick={handleEndInterview}

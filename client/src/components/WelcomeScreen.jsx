@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Play, Download, BarChart3, Users, Clock, Award } from 'lucide-react'
+import salesCsvUrl from '../sales_data.csv?url'
 import './WelcomeScreen.css'
 
 const WelcomeScreen = ({ onStartInterview }) => {
@@ -67,7 +68,7 @@ const WelcomeScreen = ({ onStartInterview }) => {
           <div className="setup-card">
             <h2>Start Your Interview</h2>
             <p>Fill in your details to begin the Excel skills assessment</p>
-            
+
             <form onSubmit={handleSubmit} className="setup-form">
               <div className="form-group">
                 <label htmlFor="name">Your Name *</label>
@@ -93,11 +94,7 @@ const WelcomeScreen = ({ onStartInterview }) => {
                   className="input"
                 >
                   <option value="Excel Analyst">Excel Analyst</option>
-                  <option value="Data Analyst">Data Analyst</option>
-                  <option value="Business Analyst">Business Analyst</option>
-                  <option value="Financial Analyst">Financial Analyst</option>
-                  <option value="Student">Student</option>
-                  <option value="Other">Other</option>
+
                 </select>
               </div>
 
@@ -132,12 +129,13 @@ const WelcomeScreen = ({ onStartInterview }) => {
               <h3>Download Sample Data</h3>
               <p>Get the sales data file to practice offline</p>
             </div>
-            <button 
+            <a
               className="btn btn-secondary"
-              onClick={() => window.open('/api/start', '_blank')}
+              href={salesCsvUrl}
+              download
             >
               Download CSV
-            </button>
+            </a>
           </div>
         </div>
       </div>

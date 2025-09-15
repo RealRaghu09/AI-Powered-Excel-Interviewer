@@ -265,13 +265,14 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
             <RotateCcw size={20} />
             Start New Interview
           </button>
-          <button 
-            onClick={() => window.open('/api/start', '_blank')}
+          <a 
+            href="/sales_data.csv"
+            download
             className="btn btn-secondary"
           >
             <Download size={20} />
             Download Data
-          </button>
+          </a>
         </div>
       </div>
 
