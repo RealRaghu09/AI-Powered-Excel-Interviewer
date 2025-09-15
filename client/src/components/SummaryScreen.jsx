@@ -7,6 +7,7 @@ import './SummaryScreen.css'
 const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [summary, setSummary] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     loadSummary()
@@ -15,10 +16,11 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   const loadSummary = async () => {
     try {
       const summaryData = await getSummary()
-      console.log(summaryData)
       setSummary(summaryData)
-    } catch (error) {
-      console.error('Error loading summary:', error)
+      setError(null)
+    } catch (err) {
+      console.error('Error loading summary:', err)
+      setError('Failed to load summary. Please ensure the interview has started and try again.')
     } finally {
       setIsLoading(false)
     }
@@ -56,6 +58,8 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   const score = getScore()
   const performance = getPerformanceLevel(score)
   const PerformanceIcon = performance.icon
+
+  const hasApiSummary = summary && !summary.error
 
   return (
     <div className="summary-screen">
@@ -116,34 +120,94 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
         <div className="detailed-summary">
           <h2>Interview Summary</h2>
           <div className="summary-content">
-            {summary?.summary ? (
+            {error && (
               <div className="summary-text">
-                {summary.summary}
-              </div>
-            ) : (
-              <div className="summary-text">
-                <p>Great job completing the Excel interview! You answered {interviewData?.answers?.length || 0} out of {interviewData?.questions?.length || 0} questions.</p>
-                <p>Your performance shows {performance.level.toLowerCase()} understanding of Excel concepts. Keep practicing to improve your skills!</p>
+                <p>{error}</p>
               </div>
             )}
 
-            {summary?.data_insights && (
-              <div className="data-insights">
-                <h3>Data Insights</h3>
-                <div className="insights-grid">
-                  <div className="insight-item">
-                    <span className="insight-label">Total Records:</span>
-                    <span className="insight-value">{summary.data_insights.total_records}</span>
+            {!error && hasApiSummary && (
+              <div className="api-summary-container">
+                <div className="api-summary-grid">
+                  <div className="api-summary-card">
+                    <span className="label">Candidate ID</span>
+                    <span className="value">{summary.candidate_id}</span>
                   </div>
-                  <div className="insight-item">
-                    <span className="insight-label">Date Range:</span>
-                    <span className="insight-value">{summary.data_insights.date_range}</span>
+                  <div className="api-summary-card">
+                    <span className="label">Overall Score</span>
+                    <span className="value">{summary.overall_score}</span>
                   </div>
-                  <div className="insight-item">
-                    <span className="insight-label">Regions:</span>
-                    <span className="insight-value">{summary.data_insights.regions?.join(', ')}</span>
+                  <div className="api-summary-card">
+                    <span className="label">Recommendation</span>
+                    <span className="value">{summary.recommendation}</span>
                   </div>
                 </div>
+
+                {Array.isArray(summary.key_themes) && summary.key_themes.length > 0 && (
+                  <div className="api-summary-section">
+                    <h3>Key Themes</h3>
+                    <ul className="bulleted">
+                      {summary.key_themes.map((t, i) => (
+                        <li key={i}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {Array.isArray(summary.strengths) && summary.strengths.length > 0 && (
+                  <div className="api-summary-section">
+                    <h3>Strengths</h3>
+                    <ul className="bulleted">
+                      {summary.strengths.map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {Array.isArray(summary.weaknesses) && summary.weaknesses.length > 0 && (
+                  <div className="api-summary-section">
+                    <h3>Weaknesses</h3>
+                    <ul className="bulleted">
+                      {summary.weaknesses.map((w, i) => (
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {summary.topic_breakdown && (
+                  <div className="api-summary-section">
+                    <h3>Topic Breakdown</h3>
+                    <div className="topic-grid">
+                      {Object.entries(summary.topic_breakdown).map(([k, v]) => (
+                        <div key={k} className="topic-item">
+                          <span className="topic-label">{k.replace(/_/g, ' ')}</span>
+                          <span className="topic-value">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {summary.summary && (
+                  <div className="api-summary-section">
+                    <h3>Summary</h3>
+                    <div className="summary-text">{summary.summary}</div>
+                  </div>
+                )}
+
+                <details className="api-raw-json">
+                  <summary>View raw JSON</summary>
+                  <pre>{JSON.stringify(summary, null, 2)}</pre>
+                </details>
+              </div>
+            )}
+
+            {!error && !hasApiSummary && (
+              <div className="summary-text">
+                <p>Great job completing the Excel interview! You answered {interviewData?.answers?.length || 0} out of {interviewData?.questions?.length || 0} questions.</p>
+                <p>Your performance shows {performance.level.toLowerCase()} understanding of Excel concepts. Keep practicing to improve your skills!</p>
               </div>
             )}
           </div>

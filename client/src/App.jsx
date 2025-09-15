@@ -3,7 +3,7 @@ import Navbar from './components/Navbar'
 import WelcomeScreen from './components/WelcomeScreen'
 import ChatInterface from './components/ChatInterface'
 import SummaryScreen from './components/SummaryScreen'
-import { getDataSummary } from './services/api'
+import { getSummary } from './services/api'
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('welcome') // welcome, chat, summary
@@ -34,7 +34,7 @@ function App() {
     
     try {
       // Get summary from backend
-      const summaryData = await getDataSummary()
+      const summaryData = await getSummary()
       setSummary(summaryData)
       setCurrentScreen('summary')
     } catch (error) {
