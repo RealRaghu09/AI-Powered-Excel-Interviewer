@@ -14,6 +14,10 @@ CORS(app, resources={
 
 llm = MyModel()
 
+@app.route('/health')
+def health():
+    return jsonify({"status": "ok"}), 200
+
 @app.route('/home')
 def home():
     response = {
