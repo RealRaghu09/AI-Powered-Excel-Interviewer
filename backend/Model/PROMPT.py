@@ -94,6 +94,16 @@ json_schema = {
             "recommendation": {
                 "type": "string",
                 "enum": ["Proceed", "Follow-up", "Do not proceed"]
+            },
+            "questions_asked": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Total number of questions asked by interviewer"
+            },
+            "questions_answered": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Total number of questions answered by candidate"
             }
         },
         "required": [

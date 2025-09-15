@@ -20,6 +20,9 @@ class MyModel:
         self.model = self.llm.with_structured_output(self.json_schema)
         self.list_of_messages = []
         self.last_summary = None
+        # Track simple counts during the session
+        self.num_questions_asked = 0
+        self.num_questions_answered = 0
         
 
     def response(self, message: str) -> str:
@@ -36,6 +39,9 @@ class MyModel:
         self.list_of_messages.append(f"{system_prompt}\n{message}")
         response = self.llm.invoke("for understanding I have included the Tags of Interviewer, don't include that tags in output\n".join(self.list_of_messages))
         self.list_of_messages.append(f"Interviewer: {response.content}")
+        # Heuristic: each non-initial exchange increments both asked and answered
+        self.num_questions_asked += 1
+        self.num_questions_answered += 1
         return response.content
 
     def summary(self):
@@ -49,12 +55,20 @@ class MyModel:
             return failed_message
 
         last_response = self.list_of_messages
+        # Capture counts prior to reset
+        questions_asked = self.num_questions_asked
+        questions_answered = self.num_questions_answered
         # Reset the conversation for next session after we compute the summary
         self.list_of_messages = []
+        self.num_questions_asked = 0
+        self.num_questions_answered = 0
 
         # Try structured LLM summary, fallback to heuristic summary on failure
         try:
             response = self.model.invoke("\n".join(last_response))
+            if isinstance(response, dict):
+                response.setdefault("questions_asked", questions_asked)
+                response.setdefault("questions_answered", questions_answered)
             self.last_summary = response
             return response
         except Exception:
@@ -80,7 +94,9 @@ class MyModel:
                 "weaknesses": [
                     "Needs deeper function mastery"
                 ],
-                "recommendation": "Follow-up"
+                "recommendation": "Follow-up",
+                "questions_asked": questions_asked,
+                "questions_answered": questions_answered
             }
             self.last_summary = fallback
             return fallback

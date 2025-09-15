@@ -111,14 +111,14 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
             <div className="stat-card">
               <CheckCircle size={20} />
               <div>
-                <div className="stat-value">{interviewData?.answers?.length || 0}</div>
+                <div className="stat-value">{summary?.questions_answered  || 0}</div>
                 <div className="stat-label">Questions Answered</div>
               </div>
             </div>
             <div className="stat-card">
               <BarChart3 size={20} />
               <div>
-                <div className="stat-value">{interviewData?.questions?.length || 0}</div>
+                <div className="stat-value">{summary?.questions_asked || 0}</div>
                 <div className="stat-label">Total Questions</div>
               </div>
             </div>
@@ -147,21 +147,21 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
                 <div className="mini-stats">
                   <div className="mini-stat">
                     <div className="mini-stat-label">Questions Answered</div>
-                    <div className="mini-stat-value">{interviewData?.answers?.length || 0}</div>
+                    <div className="mini-stat-value">{summary?.questions_answered ?? (interviewData?.answers?.length || 0)}</div>
                   </div>
                   <div className="mini-stat">
                     <div className="mini-stat-label">Total Questions</div>
-                    <div className="mini-stat-value">{interviewData?.questions?.length || 0}</div>
+                    <div className="mini-stat-value">{summary?.questions_asked ?? (interviewData?.questions?.length || 0)}</div>
                   </div>
                 </div>
 
                 <div className="api-summary-grid">
                   <div className="api-summary-card">
-                    <span className="label">Overall Score</span>
+                    <span className="label">Overall Score </span>
                     <span className="value">{summary.overall_score}</span>
                   </div>
                   <div className="api-summary-card">
-                    <span className="label">Recommendation</span>
+                    <span className="label">Recommendation </span>
                     <span className="value">{summary.recommendation}</span>
                   </div>
                 </div>
@@ -220,10 +220,7 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
                   </div>
                 )}
 
-                <details className="api-raw-json">
-                  <summary>View raw JSON</summary>
-                  <pre>{JSON.stringify(summary, null, 2)}</pre>
-                </details>
+                
               </div>
             )}
 
