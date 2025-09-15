@@ -15,6 +15,7 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   const loadSummary = async () => {
     try {
       const summaryData = await getSummary()
+      console.log(summaryData)
       setSummary(summaryData)
     } catch (error) {
       console.error('Error loading summary:', error)
