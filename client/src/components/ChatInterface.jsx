@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Send, Download, RotateCcw, CheckCircle, XCircle, Clock } from 'lucide-react'
-import {askQuestion, getRandomQuestion, generateQuestion, evaluateAnswer, getSummary } from '../services/api'
+import {askQuestion, getRandomQuestion, generateQuestion, evaluateAnswer } from '../services/api'
 import './ChatInterface.css'
 import 'axios'
 import Loading from './Loading'
@@ -158,16 +158,13 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
   const handleEndInterview = async () => {
     setIsEndingInterview(true)
     try {
-      const summaryData = await getSummary()
       setInterviewData(prev => ({
         ...prev,
-        summary: summaryData,
         endTime: new Date()
       }))
       onEndInterview()
     } catch (error) {
       console.error('Error ending interview:', error)
-      // Show error message to user
     } finally {
       setIsEndingInterview(false)
     }

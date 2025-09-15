@@ -162,6 +162,131 @@
     line-height: 1.6;
 }
 
+/* New API summary containers */
+.api-summary-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.outcome-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0a0f0a;
+    border: 1px solid #1f3d1f;
+    padding: 16px 20px;
+    border-radius: 12px;
+}
+
+.outcome-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #e5e5e5;
+}
+
+.recommendation-badge {
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0b0b0b;
+}
+
+.recommendation-badge.proceed {
+    background: #10b981;
+}
+
+.recommendation-badge.follow-up {
+    background: #f59e0b;
+}
+
+.recommendation-badge.do-not-proceed {
+    background: #ef4444;
+}
+
+.mini-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mini-stat {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.mini-stat-label {
+    color: #a3a3a3;
+    font-size: 0.85rem;
+}
+
+.mini-stat-value {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.api-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.api-summary-card {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.api-summary-card .label {
+    color: #a3a3a3;
+    font-size: 0.85rem;
+}
+
+.api-summary-card .value {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.api-summary-section h3 {
+    color: #93c5fd;
+}
+
+.bulleted {
+    padding-left: 20px;
+}
+
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.topic-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.topic-label {
+    color: #ccc;
+    text-transform: capitalize;
+}
+
+.topic-value {
+    color: #fff;
+    font-weight: 700;
+}
+
 .summary-text {
     margin-bottom: 24px;
 }

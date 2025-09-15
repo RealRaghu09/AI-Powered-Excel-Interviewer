@@ -33,9 +33,10 @@ function App() {
     }))
     
     try {
-      // Get summary from backend
+      // Get summary from backend once, store in state
       const summaryData = await getSummary()
       setSummary(summaryData)
+      setInterviewData(prev => ({ ...prev, summary: summaryData }))
       setCurrentScreen('summary')
     } catch (error) {
       console.error('Error getting summary:', error)

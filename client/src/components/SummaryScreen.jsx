@@ -10,6 +10,12 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
+    // Prefer summary passed from App (collected once when interview ends)
+    if (interviewData?.summary) {
+      setSummary(interviewData.summary)
+      setIsLoading(false)
+      return
+    }
     loadSummary()
   }, [])
 
@@ -56,10 +62,13 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   }
 
   const score = getScore()
-  const performance = getPerformanceLevel(score)
-  const PerformanceIcon = performance.icon
+  const apiScore = typeof summary?.overall_score === 'number' ? summary.overall_score : null
+  const displayScore = apiScore !== null ? apiScore : score
+  const scoreColor = displayScore > 50 ? '#10b981' : '#ef4444'
+  const PerformanceIcon = displayScore > 50 ? Award : Clock
 
   const hasApiSummary = summary && !summary.error
+  const recommendation = (summary && summary.recommendation) || 'Follow-up'
 
   return (
     <div className="summary-screen">
@@ -81,13 +90,13 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
         <div className="performance-overview">
           <div className="score-card">
             <div className="score-circle">
-              <PerformanceIcon size={24} color={performance.color} />
+              <PerformanceIcon size={24} color={scoreColor} />
             </div>
             <div className="score-details">
-              <div className="score-number" data-color={performance.color}>
-                {score}%
+              <div className="score-number" data-color={scoreColor}>
+                {displayScore}%
               </div>
-              <div className="score-label">{performance.level}</div>
+              <div className="score-label">{displayScore > 50 ? 'Proceed' : 'Needs Improvement'}</div>
             </div>
           </div>
 
@@ -128,11 +137,25 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
 
             {!error && hasApiSummary && (
               <div className="api-summary-container">
-                <div className="api-summary-grid">
-                  <div className="api-summary-card">
-                    <span className="label">Candidate ID</span>
-                    <span className="value">{summary.candidate_id}</span>
+                <div className="outcome-banner" data-recommendation={recommendation}>
+                  <div className="outcome-title">{performance.level}</div>
+                  <span className={`recommendation-badge ${recommendation.replace(/\s+/g, '-').toLowerCase()}`}>
+                    {recommendation}
+                  </span>
+                </div>
+
+                <div className="mini-stats">
+                  <div className="mini-stat">
+                    <div className="mini-stat-label">Questions Answered</div>
+                    <div className="mini-stat-value">{interviewData?.answers?.length || 0}</div>
                   </div>
+                  <div className="mini-stat">
+                    <div className="mini-stat-label">Total Questions</div>
+                    <div className="mini-stat-value">{interviewData?.questions?.length || 0}</div>
+                  </div>
+                </div>
+
+                <div className="api-summary-grid">
                   <div className="api-summary-card">
                     <span className="label">Overall Score</span>
                     <span className="value">{summary.overall_score}</span>
