@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react'
+import Loading from './Loading'
 import { Download, RotateCcw, BarChart3, Clock, CheckCircle, TrendingUp, Award } from 'lucide-react'
-import { getInterviewSummary } from '../services/api'
+import { getSummary } from '../services/api'
 import './SummaryScreen.css'
 
-const SummaryScreen = ({ userInfo, interviewData, summary, onRestart }) => {
-  const [detailedSummary, setDetailedSummary] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
+const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [summary, setSummary] = useState(null)
 
   useEffect(() => {
-    if (!summary) {
-      loadDetailedSummary()
-    }
+    loadSummary()
   }, [])
 
-  const loadDetailedSummary = async () => {
-    setIsLoading(true)
+  const loadSummary = async () => {
     try {
-      const response = await getInterviewSummary()
-      setDetailedSummary(response)
+      const summaryData = await getSummary()
+      setSummary(summaryData)
     } catch (error) {
-      console.error('Error loading detailed summary:', error)
+      console.error('Error loading summary:', error)
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
+  }
+
+  if (isLoading) {
+    return <Loading message="Loading Interview Summary..." />
   }
 
   const getDuration = () => {
@@ -111,45 +114,38 @@ const SummaryScreen = ({ userInfo, interviewData, summary, onRestart }) => {
         {/* Detailed Summary */}
         <div className="detailed-summary">
           <h2>Interview Summary</h2>
-          {isLoading ? (
-            <div className="loading-state">
-              <div className="spinner" />
-              <span>Generating detailed summary...</span>
-            </div>
-          ) : (
-            <div className="summary-content">
-              {detailedSummary?.summary ? (
-                <div className="summary-text">
-                  {detailedSummary.summary}
-                </div>
-              ) : (
-                <div className="summary-text">
-                  <p>Great job completing the Excel interview! You answered {interviewData?.answers?.length || 0} out of {interviewData?.questions?.length || 0} questions.</p>
-                  <p>Your performance shows {performance.level.toLowerCase()} understanding of Excel concepts. Keep practicing to improve your skills!</p>
-                </div>
-              )}
+          <div className="summary-content">
+            {summary?.summary ? (
+              <div className="summary-text">
+                {summary.summary}
+              </div>
+            ) : (
+              <div className="summary-text">
+                <p>Great job completing the Excel interview! You answered {interviewData?.answers?.length || 0} out of {interviewData?.questions?.length || 0} questions.</p>
+                <p>Your performance shows {performance.level.toLowerCase()} understanding of Excel concepts. Keep practicing to improve your skills!</p>
+              </div>
+            )}
 
-              {detailedSummary?.data_insights && (
-                <div className="data-insights">
-                  <h3>Data Insights</h3>
-                  <div className="insights-grid">
-                    <div className="insight-item">
-                      <span className="insight-label">Total Records:</span>
-                      <span className="insight-value">{detailedSummary.data_insights.total_records}</span>
-                    </div>
-                    <div className="insight-item">
-                      <span className="insight-label">Date Range:</span>
-                      <span className="insight-value">{detailedSummary.data_insights.date_range}</span>
-                    </div>
-                    <div className="insight-item">
-                      <span className="insight-label">Regions:</span>
-                      <span className="insight-value">{detailedSummary.data_insights.regions?.join(', ')}</span>
-                    </div>
+            {summary?.data_insights && (
+              <div className="data-insights">
+                <h3>Data Insights</h3>
+                <div className="insights-grid">
+                  <div className="insight-item">
+                    <span className="insight-label">Total Records:</span>
+                    <span className="insight-value">{summary.data_insights.total_records}</span>
+                  </div>
+                  <div className="insight-item">
+                    <span className="insight-label">Date Range:</span>
+                    <span className="insight-value">{summary.data_insights.date_range}</span>
+                  </div>
+                  <div className="insight-item">
+                    <span className="insight-label">Regions:</span>
+                    <span className="insight-value">{summary.data_insights.regions?.join(', ')}</span>
                   </div>
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Question Review */}

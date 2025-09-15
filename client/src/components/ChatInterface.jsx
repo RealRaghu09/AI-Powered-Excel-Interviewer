@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Send, Download, RotateCcw, CheckCircle, XCircle, Clock } from 'lucide-react'
-import {askQuestion, getRandomQuestion, generateQuestion, evaluateAnswer } from '../services/api'
+import {askQuestion, getRandomQuestion, generateQuestion, evaluateAnswer, getSummary } from '../services/api'
 import './ChatInterface.css'
 import 'axios'
+import Loading from './Loading'
 
 const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndInterview }) => {
   const [currentQuestion, setCurrentQuestion] = useState(null)
@@ -10,6 +11,7 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
   const [isLoading, setIsLoading] = useState(false)
   const [messages, setMessages] = useState([])
   const [questionNumber, setQuestionNumber] = useState(1)
+  const [isEndingInterview, setIsEndingInterview] = useState(false)
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -153,6 +155,24 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
     }
   }
 
+  const handleEndInterview = async () => {
+    setIsEndingInterview(true)
+    try {
+      const summaryData = await getSummary()
+      setInterviewData(prev => ({
+        ...prev,
+        summary: summaryData,
+        endTime: new Date()
+      }))
+      onEndInterview()
+    } catch (error) {
+      console.error('Error ending interview:', error)
+      // Show error message to user
+    } finally {
+      setIsEndingInterview(false)
+    }
+  }
+
   const getMessageIcon = (type) => {
     switch (type) {
       case 'question':
@@ -170,6 +190,7 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
 
   return (
     <div className="chat-interface">
+      {isEndingInterview && <Loading />}
       <div className="chat-container">
         {/* Messages Area */}
         <div className="messages-container">
@@ -271,6 +292,14 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
             >
               <Download size={16} />
               Download Data
+            </button>
+
+            <button
+              onClick={handleEndInterview}
+              disabled={isLoading || isEndingInterview}
+              className="btn btn-primary"
+            >
+              End Interview
             </button>
           </div>
         </div>

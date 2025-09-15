@@ -1,64 +1,13 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
-from Model.PROMPT import system_prompt
+from Model.PROMPT import system_prompt ,json_schema , failed_message
 from langchain_core.output_parsers import StrOutputParser
+import json
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 class MyModel:
-    json_schema = {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "title": "ExcelInterviewSummary",
-        "type": "object",
-        "properties": {
-            "candidate_id": {
-                "type": "string",
-                "description": "Unique identifier for the candidate"
-            },
-            "overall_score": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 100,
-                "description": "Overall performance score (0-100)"
-            },
-            "topic_breakdown": {
-                "type": "object",
-                "properties": {
-                    "formulas": {"type": "integer", "minimum": 0, "maximum": 10},
-                    "pivot_tables": {"type": "integer", "minimum": 0, "maximum": 10},
-                    "charts": {"type": "integer", "minimum": 0, "maximum": 10},
-                    "data_cleaning": {"type": "integer", "minimum": 0, "maximum": 10}
-                },
-                "required": ["formulas", "pivot_tables", "charts", "data_cleaning"]
-            },
-            "key_themes": {
-                "type": "array",
-                "items": {"type": "string"}
-            },
-            "summary": {"type": "string"},
-            "strengths": {
-                "type": "array",
-                "items": {"type": "string"}
-            },
-            "weaknesses": {
-                "type": "array",
-                "items": {"type": "string"}
-            },
-            "recommendation": {
-                "type": "string",
-                "enum": ["Proceed", "Follow-up", "Do not proceed"]
-            }
-        },
-        "required": [
-            "candidate_id",
-            "overall_score",
-            "topic_breakdown",
-            "key_themes",
-            "summary",
-            "strengths",
-            "weaknesses",
-            "recommendation"
-        ]
-    }
+    json_schema = json_schema
 
     def __init__(self):
         load_dotenv()
@@ -66,29 +15,35 @@ class MyModel:
             model="gemini-1.5-flash",
             temperature=0
         )
+        # self.item = RecursiveCharacterTextSplitter(self.model)
         self.parser = StrOutputParser()
         self.model = self.llm.with_structured_output(self.json_schema)
-        self.list_of_messages = []  # global history
+        self.list_of_messages = []  
+        
 
     def response(self, message: str) -> str:
         """
         Store conversation, generate response.
         """
         if not self.list_of_messages:
-            # First message, greet candidate
+            # First message, greet candidate by getting started
             greeting = "Welcome to the Excel Interview! Please download the sample data (sales_data.csv) and load it into Excel. Let's begin."
-            self.list_of_messages.append(system_prompt)
-            self.list_of_messages.append(f"Candidate: {message}")
+            self.list_of_messages.append(system_prompt+message)
             self.list_of_messages.append(f"Interviewer: {greeting}")
             return greeting
 
-        self.list_of_messages.append(f"Candidate: {message}")
-        response = self.llm.invoke("\n".join(self.list_of_messages))
+        self.list_of_messages.append(f"{system_prompt}\n{message}")
+        response = self.llm.invoke("for understanding I have included the Tags of Interviewer, don't include that tags in output\n".join(self.list_of_messages))
         self.list_of_messages.append(f"Interviewer: {response.content}")
         return response.content
 
     def summary(self):
         """
-        Generate JSON summary of candidate's performance.
+        Generate JSON summary of candidate's performance. when len != 0
         """
-        return self.model.invoke("\n".join(self.list_of_messages))
+        if len(self.list_of_messages) == 0:
+            return failed_message
+        last_response = self.list_of_messages
+        self.list_of_messages = []
+        response = self.model.invoke("\n".join(last_response))
+        return response

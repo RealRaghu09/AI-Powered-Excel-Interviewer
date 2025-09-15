@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const API_BASE_URL = '/api'
+const API_BASE = "http://127.0.0.1:5000"
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,8 +9,6 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 })
-
-const API_BASE = "http://127.0.0.1:5000"
 
 // Ask question API
 export const askQuestion = async (question) => {
@@ -120,22 +119,14 @@ export const evaluateAnswer = async (question, answer) => {
   }
 }
 
-export const getDataSummary = async () => {
-  try {
-    const response = await api.get('/data/summary')
-    return response.data
-  } catch (error) {
-    console.error('Error fetching data summary:', error)
-    throw error
-  }
-}
 
-export const getInterviewSummary = async () => {
+
+export const getSummary = async () => {
   try {
-    const response = await api.get('/summary')
+    const response = await axios.get(`${API_BASE}/summary`)
     return response.data
   } catch (error) {
-    console.error('Error fetching interview summary:', error)
+    console.error("Error fetching summary:", error)
     throw error
   }
 }
