@@ -10,7 +10,7 @@ const SummaryScreen = ({ userInfo, interviewData, onRestart }) => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    // Prefer summary passed from App (collected once when interview ends)
+
     if (interviewData?.summary) {
       setSummary(interviewData.summary)
       setIsLoading(false)

@@ -190,7 +190,7 @@ const ChatInterface = ({ userInfo, interviewData, setInterviewData, onEndIntervi
     <div className="chat-interface">
       {isEndingInterview && <Loading />}
       <div className="chat-container">
-        {/* Messages Area */}
+
         <div className="messages-container">
           <div className="messages-list">
             {messages.map((message) => (

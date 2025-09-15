@@ -181,8 +181,6 @@
   color: #aaa;
   opacity: 1;
 }
-
-/* Remove default select arrow for consistency */
 select.input {
   appearance: none;
   -webkit-appearance: none;
@@ -192,7 +190,7 @@ select.input {
   background-size: 16px 16px;
 }
 
-/* ...existing code... */
+
 .download-card h3 {
     font-size: 1.1rem;
     font-weight: 600;
