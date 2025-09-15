@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API_BASE_URL = '/api'
-const API_BASE = "http://127.0.0.1:5000"
+const API_BASE = "https://ai-powered-excel-interviewer-7.onrender.com"
 
 const api = axios.create({
   baseURL: API_BASE_URL,
